@@ -2,27 +2,33 @@
 #include<stack>
 #include<string>
 using namespace  std ;
-
-bool check_redundant(string s){
-    stack<int> temp ;
-    for(char ch : s){
-        if(ch == '(' || ch == '+' || ch == '-' ||ch == '*' || ch == '/'){
+bool check_redundant(string s) {
+    stack<char> temp;
+    for (char ch : s) {
+        if (ch == '(' || ch == '+' || ch == '-' || ch == '*' || ch == '/') {
             temp.push(ch);
-        }
-        else{
-            int count = 0;
-            if(ch ==')' && temp.top() != '('){
-                count++;
+        } 
+        else if (ch == ')') {
+            bool operator_found = false;
+
+            // Pop until '('
+            while (!temp.empty() && temp.top() != '(') {
+                char top = temp.top();
+                if (top == '+' || top == '-' || top == '*' || top == '/')
+                    operator_found = true;
                 temp.pop();
             }
-            // yaha pe close bracket ke liye opening milega 
-            if(count ==0  ) return true ;
-            temp.pop();
+
+            // Pop the '('
+            if (!temp.empty()) temp.pop();
+
+            // If no operator found → redundant brackets
+            if (!operator_found) return true;
         }
     }
-    return false ;
-
+    return false;
 }
+
 
 bool isRedundant(string &s) {
     stack<char> st;
@@ -55,8 +61,8 @@ bool isRedundant(string &s) {
 
 
 int main(){
-    string s = "((a+b)+(a+b))" ;
+    string s = "(((a+b)(a+b)))" ;
 
-    if(isRedundant(s))  cout << "redundant brackets" ;
+    if(check_redundant(s))  cout << "redundant brackets" ;
     else                    cout << " no redundant brackets ";  
 }
